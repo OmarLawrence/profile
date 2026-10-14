@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+x<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -597,7 +597,7 @@
                     <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200">
                         <h4 class="text-xl font-bold text-slate-900 mb-6">Schedule an Intro Call / Message Me</h4>
                         
-                        <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                        <form id="contact-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST" onsubmit="handleFormSubmit(event)" class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1">Your Name *</label>
@@ -670,25 +670,60 @@
     </footer>
 
     <!-- JavaScript for Mobile Menu & Form submission -->
-    <script>
-        // Toggle mobile menu
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
+   <script>
+    // Toggle mobile menu
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+    menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
 
-        // Handle contact form submission cleanly without alert()
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const form = document.getElementById('contact-form');
-            const successMsg = document.getElementById('success-msg');
-            
-            form.style.display = 'none';
-            successMsg.classList.remove('hidden');
+    // Handle contact form submission directly via Formspree AJAX
+    async function handleFormSubmit(event) {
+        event.preventDefault();
+        const form = document.getElementById('contact-form');
+        const successMsg = document.getElementById('success-msg');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn ? submitBtn.innerText : '';
+
+        // Show loading state on button
+        if (submitBtn) {
+            submitBtn.innerText = 'Sending...';
+            submitBtn.disabled = true;
         }
-    </script>
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                // Success: Hide form and reveal your custom inline success message
+                form.style.display = 'none';
+                if (successMsg) {
+                    successMsg.classList.remove('hidden');
+                }
+            } else {
+                alert('Oops! There was a problem submitting your request. Please try again or email omar.lawrence.pm@gmail.com directly.');
+                if (submitBtn) {
+                    submitBtn.innerText = originalBtnText;
+                    submitBtn.disabled = false;
+                }
+            }
+        } catch (error) {
+            alert('Unable to send at this moment. Please email omar.lawrence.pm@gmail.com directly.');
+            if (submitBtn) {
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        }
+    }
+</script>
 
 </body>
 </html>
